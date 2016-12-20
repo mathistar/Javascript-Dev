@@ -1,5 +1,38 @@
 import './index.css';
-import numeral from 'numeral';
+import {getUsers, deleteUser} from './api/userApi';
 
-const currencyValue = numeral(123000).format('$0,000.00');
-console.log(`currency super man it is changing ${currencyValue}`);  // eslint-disable-line no-console
+// import numeral from 'numeral';
+//
+// const currencyValue = numeral(123000).format('$0,000.00');
+// console.log(`currency super man it is changing ${currencyValue}`);  // eslint-disable-line no-console
+
+getUsers().then(result => {
+  let userBody = "";
+
+  result.forEach(user => {
+    userBody += `
+          <tr>
+            <td><a href="#" data-id="${user.id}" class="deleteUser">Delete</a></td>
+            <td>${user.id}</td>
+            <td>${user.firstName}</td>
+            <td>${user.lastName}</td>
+            <td>${user.email}</td>
+            <td>${user.phone}</td>
+           </tr>
+        `;
+  });
+  global.document.getElementById('users').innerHTML = userBody;
+
+  const deleteLinks = global.document.getElementsByClassName('deleteUser');
+
+  Array.from(deleteLinks, link => {
+    link.onclick = function (event) {
+      const element = event.target;
+      event.preventDefault();
+      deleteUser(element.attributes['data-id'].value);
+      const row = element.parentNode.parentNode;
+      row.parentNode.removeChild(row);
+    }
+  })
+
+});
